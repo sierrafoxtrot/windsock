@@ -16,6 +16,13 @@
 
 import xml.etree.ElementTree as ET
 import urllib
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-l", "--log",
+                  action="store", type="string", dest="log_filename")
+
+(options, args) = parser.parse_args()
 
 # Retrieve modem status
 f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
@@ -23,4 +30,11 @@ s = f.read()
 f.close()
 
 element = ET.fromstring(s)
-print "SignalStrength = ", element.findtext("SignalStrength")
+signal_strength = element.findtext("SignalStrength")
+print "SignalStrength = ", signal_strength
+
+if options.log_filename != '':
+    log = open(options.log_filename, 'w')
+    log.write(s)
+    log.close()
+
