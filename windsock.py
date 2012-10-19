@@ -81,6 +81,8 @@ def update_status():
     print("new_icon = ", new_icon)
     indi.set_icon(new_icon)
 
+    return True
+
 
 # Create the indicator itself (get something in the tray ASAP)
 if __name__ == "__main__":
