@@ -17,6 +17,10 @@
 import xml.etree.ElementTree as ET
 import urllib
 from optparse import OptionParser
+import gobject
+import gtk
+import appindicator
+import sys
 
 parser = OptionParser()
 parser.add_option("-l", "--log",
@@ -24,17 +28,57 @@ parser.add_option("-l", "--log",
 
 (options, args) = parser.parse_args()
 
-# Retrieve modem status
-f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
-s = f.read()
-f.close()
+def menuitem_response(w, item):
+    if item == '_quit':
+        sys.exit(0)
 
-element = ET.fromstring(s)
-signal_strength = element.findtext("SignalStrength")
-print "SignalStrength = ", signal_strength
 
-if options.log_filename != '':
-    log = open(options.log_filename, 'w')
-    log.write(s)
-    log.close()
+def add_separator(menu):
+    separator = gtk.SeparatorMenuItem()
+    separator.show()
+    menu.append(separator)
+
+
+def add_menu_item(menu, caption, item=None):
+    menu_item = gtk.MenuItem(caption)
+    if item:
+        menu_item.connect("activate", menuitem_response, item)
+    else:
+        menu_item.set_sensitive(False)
+    menu_item.show()
+    menu.append(menu_item)
+
+
+def build_menu():
+    menu = gtk.Menu()
+
+    add_separator(menu)
+    add_menu_item(menu, 'Quit', '_quit')
+    return menu
+
+
+# Create the indicator itself (get something in the tray ASAP)
+if __name__ == "__main__":
+    indi = appindicator.Indicator("Windsock", "network-error",
+                                 appindicator.CATEGORY_APPLICATION_STATUS)
+    indi.set_status(appindicator.STATUS_ACTIVE)
+
+    appmenu = build_menu()
+    indi.set_menu(appmenu)
+    gtk.main()
+
+
+    # Retrieve modem status
+    f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
+    s = f.read()
+    f.close()
+
+    element = ET.fromstring(s)
+    signal_strength = element.findtext("SignalStrength")
+    print "SignalStrength = ", signal_strength
+
+    if options.log_filename != '':
+        log = open(options.log_filename, 'w')
+        log.write(s)
+        log.close()
 
