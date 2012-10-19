@@ -22,6 +22,8 @@ import gtk
 import appindicator
 import sys
 
+PING_FREQUENCY = 10
+
 parser = OptionParser()
 parser.add_option("-l", "--log",
                   action="store", type="string", dest="log_filename")
@@ -57,6 +59,29 @@ def build_menu():
     return menu
 
 
+def update_status():
+    # Retrieve modem status
+    f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
+    s = f.read()
+    f.close()
+
+    element = ET.fromstring(s)
+    signal_strength = int(element.findtext("SignalStrength"))
+    print "SignalStrength = ", signal_strength
+
+    if signal_strength == 100:
+        new_icon = "gsm-3g-full"
+    elif signal_strength >= 75:
+        new_icon = "gsm-3g-high"
+    elif signal_strength >= 40:
+        new_icon = "gsm-3g-medium"
+    else:
+        new_icon = "gsm-3g-none"
+
+    print("new_icon = ", new_icon)
+    indi.set_icon(new_icon)
+
+
 # Create the indicator itself (get something in the tray ASAP)
 if __name__ == "__main__":
     indi = appindicator.Indicator("Windsock", "network-error",
@@ -65,20 +90,9 @@ if __name__ == "__main__":
 
     appmenu = build_menu()
     indi.set_menu(appmenu)
+
+    update_status()
+
+    gtk.timeout_add(PING_FREQUENCY * 1000, update_status)
     gtk.main()
-
-
-    # Retrieve modem status
-    f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
-    s = f.read()
-    f.close()
-
-    element = ET.fromstring(s)
-    signal_strength = element.findtext("SignalStrength")
-    print "SignalStrength = ", signal_strength
-
-    if options.log_filename != '':
-        log = open(options.log_filename, 'w')
-        log.write(s)
-        log.close()
 
