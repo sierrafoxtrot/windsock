@@ -62,17 +62,20 @@ def update():
     device.update_status()
 
     print "SignalStrength = ", device.signal_strength
+    print "WAN Online = ", device.wan_online
 
-    if device.signal_strength == 100:
-        new_icon = "gsm-3g-full"
-    elif device.signal_strength >= 75:
-        new_icon = "gsm-3g-high"
-    elif device.signal_strength >= 40:
-        new_icon = "gsm-3g-medium"
+    if device.wan_online:
+        if device.signal_strength == 100:
+            new_icon = "gsm-3g-full"
+        elif device.signal_strength >= 75:
+            new_icon = "gsm-3g-high"
+        elif device.signal_strength >= 40:
+            new_icon = "gsm-3g-medium"
+        else:
+            new_icon = "gsm-3g-none"
     else:
         new_icon = "gsm-3g-none"
 
-    print("new_icon = ", new_icon)
     indi.set_icon(new_icon)
 
     return True

@@ -17,7 +17,11 @@
 class modemBase(object):
     "Generic base class for a modem."
     def __init__(self):
-        self.signal_strength = 0;
+        # Signal Strength as a percentage
+        self.signal_strength = 0
+
+        # Is the connection to the internet "up"?
+        self.wan_online = False
 
     def update_status(self):
         raise NotImplementedError

@@ -22,6 +22,11 @@ class modem_huaweiE586(modemBase):
     """
     Driver class for the Huawei E586 wifi-3g modem.
     """
+
+    NETWORK_TYPE_3G = 4
+    NETWORK_TYPE_HDSP = 5
+    NETWORK_TYPE_HDSP_PLUS = 9
+
     def __init__(self):
         super(modem_huaweiE586, self).__init__()
 
@@ -34,5 +39,10 @@ class modem_huaweiE586(modemBase):
         element = ET.fromstring(s)
         self.signal_strength = int(element.findtext("SignalStrength"))
 
+        # 2G's data rate is so slow, we may as well just declare if "offline".
+        networkType = int(element.findtext("CurrentNetworkType"))
+        self.wan_online = bool(networkType >= modem_huaweiE586.NETWORK_TYPE_3G)
+
         return True
+
 
