@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Windsock.  If not, see <http://www.gnu.org/licenses/>.
 
-import xml.etree.ElementTree as ET
-import urllib
 from optparse import OptionParser
 import gobject
 import gtk
 import appindicator
 import sys
+import modems
 
 PING_FREQUENCY = 10
 
@@ -59,21 +58,16 @@ def build_menu():
     return menu
 
 
-def update_status():
-    # Retrieve modem status
-    f = urllib.urlopen("http://192.168.1.1/api/monitoring/status")
-    s = f.read()
-    f.close()
+def update():
+    device.update_status()
 
-    element = ET.fromstring(s)
-    signal_strength = int(element.findtext("SignalStrength"))
-    print "SignalStrength = ", signal_strength
+    print "SignalStrength = ", device.signal_strength
 
-    if signal_strength == 100:
+    if device.signal_strength == 100:
         new_icon = "gsm-3g-full"
-    elif signal_strength >= 75:
+    elif device.signal_strength >= 75:
         new_icon = "gsm-3g-high"
-    elif signal_strength >= 40:
+    elif device.signal_strength >= 40:
         new_icon = "gsm-3g-medium"
     else:
         new_icon = "gsm-3g-none"
@@ -93,8 +87,10 @@ if __name__ == "__main__":
     appmenu = build_menu()
     indi.set_menu(appmenu)
 
-    update_status()
+    device = modems.huaweiE586.modem_huaweiE586()
 
-    gtk.timeout_add(PING_FREQUENCY * 1000, update_status)
+    update()
+
+    gtk.timeout_add(PING_FREQUENCY * 1000, update)
     gtk.main()
 
