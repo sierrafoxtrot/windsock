@@ -21,7 +21,7 @@ import appindicator
 import sys
 import modems
 
-PING_FREQUENCY = 10
+PING_FREQUENCY = 5
 
 parser = OptionParser()
 parser.add_option("-l", "--log",
@@ -59,22 +59,24 @@ def build_menu():
 
 
 def update():
-    device.update_status()
-
-    print "SignalStrength = ", device.signal_strength
-    print "WAN Online = ", device.wan_online
-
-    if device.wan_online:
-        if device.signal_strength == 100:
-            new_icon = "gsm-3g-full"
-        elif device.signal_strength >= 75:
-            new_icon = "gsm-3g-high"
-        elif device.signal_strength >= 40:
-            new_icon = "gsm-3g-medium"
+    if device.update_status():
+        print "SignalStrength = ", device.signal_strength
+        print "WAN Online = ", device.wan_online
+        print "Battery Charge = ", device.battery_charge
+        if device.wan_online:
+            if device.signal_strength == 100:
+                new_icon = "gsm-3g-full"
+            elif device.signal_strength >= 75:
+                new_icon = "gsm-3g-high"
+            elif device.signal_strength >= 40:
+                new_icon = "gsm-3g-medium"
+            else:
+                new_icon = "gsm-3g-none"
         else:
             new_icon = "gsm-3g-none"
     else:
-        new_icon = "gsm-3g-none"
+        # We are not talking to the device.
+        new_icon = "network-error"
 
     indi.set_icon(new_icon)
 

@@ -23,6 +23,9 @@ class modemBase(object):
         # Is the connection to the internet "up"?
         self.wan_online = False
 
+        # Battery Charge as a percetage
+        self.battery_charge = 0
+
     def update_status(self):
         raise NotImplementedError
 
