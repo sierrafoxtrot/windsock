@@ -70,6 +70,8 @@ def update():
                 new_icon = "gsm-3g-high"
             elif device.signal_strength >= 40:
                 new_icon = "gsm-3g-medium"
+            elif device.signal_strength >= 20:
+                new_icon = "gsm-3g-low"
             else:
                 new_icon = "gsm-3g-none"
         else:
