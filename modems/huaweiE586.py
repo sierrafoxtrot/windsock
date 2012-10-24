@@ -16,6 +16,7 @@
 
 import xml.etree.ElementTree as ET
 import urllib2
+import sys
 from modem import modemBase
 
 class modem_huaweiE586(modemBase):
