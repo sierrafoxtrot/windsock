@@ -54,9 +54,14 @@ class modem_huaweiE586(modemBase):
             self.wan_online = False
             self.signal_strength = 0
             return False
+        except socket.timeout:
+            print "Timeout attempting to communicate with device"
+            self.wan_online = False
+            self.signal_strength = 0
+            return False
         except:
             print "Unexpected error:", sys.exc_info()[0]
-            raise
+            return False
 
         # Signal strength is a percentage.
         element = ET.fromstring(s)
