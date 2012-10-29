@@ -43,7 +43,7 @@ class modem_huaweiE586(modemBase):
     def __init__(self):
         super(modem_huaweiE586, self).__init__()
 
-    def update_status(self):
+    def update_status(self, debug):
         try:
             # Retrieve modem status. Would be nice to make this address configurable or
             # extract the IP address from the default gateway
@@ -64,8 +64,19 @@ class modem_huaweiE586(modemBase):
             print "Unexpected error:", sys.exc_info()[0]
             return False
 
-        # Signal strength is a percentage.
+        # Output debug info (ie the entire XML response) if requested
+        if debug:
+            print s
+
         element = ET.fromstring(s)
+
+        # A service domain value of zero implies "no network" at which time,
+        # the signal strength appears to be invalid.
+        if int(element.findtext("CurrentServiceDomain")) == 0:
+            self.wan_online = False
+            return False
+
+        # Signal strength is a percentage.
         self.signal_strength = int(element.findtext("SignalStrength"))
 
         # 2G's data rate is so slow, we may as well just declare if "offline".

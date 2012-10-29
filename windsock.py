@@ -26,6 +26,7 @@ PING_FREQUENCY = 5
 parser = OptionParser()
 parser.add_option("-l", "--log",
                   action="store", type="string", dest="log_filename")
+parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False)
 
 (options, args) = parser.parse_args()
 
@@ -59,7 +60,7 @@ def build_menu():
 
 
 def update():
-    if device.update_status():
+    if device.update_status(options.debug):
         print "SignalStrength = ", device.signal_strength
         print "WAN Online = ", device.wan_online
         print "Battery Charge = ", device.battery_charge
