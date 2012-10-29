@@ -26,14 +26,8 @@ class modemBase(object):
         # Battery Charge as a percetage
         self.battery_charge = 0
 
+    # This is the guts of the modem "driver" class. It needs to update
+    # the state variables (initialised above) and return a bool indicating
+    # whether comms is working correctly.
     def update_status(self):
         raise NotImplementedError
-
-    def __get_signal_strength__(self):
-        return self.signal_strength
-
-    def __set_signal_strength__(self, new_value):
-        self.signal_strength = new_value
-
-#    signal_strength = property(__get_signal_strength__, __set_signal_strength__,
-#                               doc = """Gets or sets the signal strength.""")
